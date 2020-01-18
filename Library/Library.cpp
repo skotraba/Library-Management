@@ -64,6 +64,8 @@ void Library::bookCheckout()
 	int tempYear;
 	std::cout << "Enter year: " << std::endl; std::cin >> tempYear;
 
+	Book tempBook = Book(tempTitle, tempType, tempYear);
+
 	std::ifstream bookFile("Books\\Booklistavailable.txt", std::ios::app);
 	
 	if (bookFile.is_open())
@@ -72,13 +74,12 @@ void Library::bookCheckout()
 		int year = 0;
 		while (bookFile >> title >> type >> year)
 		{
-
 			Book book3(title, type, year);
 			bookList.push_back(book3);
 
 			for (unsigned int i = 0; i < bookList.size(); i++)
 			{
-				if (tempTitle == bookList[i].getTitle() && bookList[i].getType() == type && tempYear == bookList[i].getYear())
+				if (bookList[i] == tempBook)
 				{
 					char choice;
 					std::cout << "Would you like to check out " << title << " Y/N ?" << std::endl;
@@ -89,7 +90,6 @@ void Library::bookCheckout()
 						tempCheckOut.push_back(bookList[i]);
 						
 						bookList.erase(std::remove(bookList.begin(), bookList.end(), bookList[i]), bookList.end());
-
 					}
 					
 				}
@@ -106,6 +106,8 @@ void Library::bookCheckout()
 	
 	bookFile.close();
 
+	// Removes the book from the available booklist file
+	// rewrites the file with the new available books
 	std::ofstream updateBookFile("Books\\Booklistavailable.txt");
 	if (updateBookFile.is_open())
 	{
@@ -119,7 +121,8 @@ void Library::bookCheckout()
 		std::cout << "Book list available did not open";
 	}
 
-	std::ofstream updateCheckedOut("Books\\Booklistcheckedout.txt");
+	// Updates the checked out books file
+	std::ofstream updateCheckedOut("Books\\Booklistcheckedout.txt", std::ios::app);
 	if (updateCheckedOut.is_open())
 	{
 		for (auto i = 0; i < tempCheckOut.size(); i++)
@@ -150,6 +153,8 @@ void Library::bookReturn()
 	int tempYear;
 	std::cout << "Enter year: " << std::endl; std::cin >> tempYear;
 
+	Book tempBook = Book(tempTitle, tempType, tempYear);
+
 	std::ifstream bookFile("Books\\Booklistcheckedout.txt", std::ios::app);
 
 	if (bookFile.is_open())
@@ -164,7 +169,7 @@ void Library::bookReturn()
 
 			for (unsigned int i = 0; i < bookList.size(); i++)
 			{
-				if (tempTitle == bookList[i].getTitle() && bookList[i].getType() == type && tempYear == bookList[i].getYear())
+				if (bookList[i] == tempBook)
 				{
 					char choice;
 					std::cout << "Would you like to return " << title << " Y/N ?" << std::endl;
