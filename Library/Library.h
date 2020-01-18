@@ -15,10 +15,13 @@ public:
 	void showBookList();
 	bool showMenuL();
 	bool showMenuS();
-
+	void showCheckedOutList();
+	
 
 	bool is_running();
 private:
+
+	vector<Book> tempCheckOut;
 	vector<Book> bookList;
 	bool isRunning = true;
 	

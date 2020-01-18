@@ -133,6 +133,11 @@
     <ClInclude Include="Library.h" />
     <ClInclude Include="Menu.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Books\Booklist.txt" />
+    <Text Include="Books\Booklistavailable.txt" />
+    <Text Include="Books\Booklistcheckedout.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

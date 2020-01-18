@@ -3,17 +3,28 @@
 Library lib = Library(true);
 
 
-//void centerString(char* s)
-//{
-//	int l = strlen(s);
-//	int pos = (int)((80 - l) / 2);
-//	for (int i = 0;i < pos;i++)
-//	{
-//		std::cout << " ";
-//		std::cout << s;
-//	}
-//}
+bool Menu::isLoggedIn()
+{
+	std::string username, password, un, pw;
 
+	std::cout << "\n";
+	std::cout << "Enter username: "; std::cin >> username;
+	std::cout << "Enter password: "; std::cin >> password;
+
+	std::ifstream read("Logins\\" + username + ".txt");
+	std::getline(read, un);
+	std::getline(read, pw);
+
+	if (un == username && pw == password)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
 
 void Menu::showMainMenu()
 {
@@ -43,22 +54,47 @@ void Menu::showMainMenu()
 	}
 	else if (input == 1)
 	{
-		string login;
-		std::cout << "Enter Login name: " << std::endl;
-		std::cin >> login;
+		int choice = 0;
 
-		int password;
-		int tempPassword = 123;
-		std::cout << "Enter password: " << std::endl;
-		std::cin >> password;
+		std::cout << "\n";
+		std::cout << "1. Register \n2. Login \n" << std::endl;
+		std::cin >> choice;
 
-		if (password == tempPassword)
+		if (choice == 1)
 		{
-			while (lib.is_running() != false)
+			std::string username, password;
+
+			std::cout << "Select a username: "; std::cin >> username;
+			std::cout << "Select a password: "; std::cin >> password;
+
+			std::ofstream file;
+			file.open("Logins\\" + username + ".txt");
+			file << username << std::endl << password;
+			file.close();
+
+			showMainMenu();
+
+		}
+		else if (choice == 2)
+		{
+			bool status = isLoggedIn();
+
+			if (!status)
 			{
-				lib.showMenuS();
+				std::cout << "False login." << std::endl;
+				showMainMenu();
+			}
+			else
+			{
+				std::cout << "Successfully logged in";
+				while (lib.is_running() != false)
+				{
+					lib.showMenuS();
+				}
+
 			}
 		}
+
 	}
 }
 

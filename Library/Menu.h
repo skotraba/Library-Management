@@ -2,6 +2,7 @@
 #ifndef MENU_H
 #define MENU_H
 #include "Library.h"
+#include <fstream>
 
 class Menu
 {
@@ -11,7 +12,7 @@ public:
 
 	//Methods
 	static void showMainMenu();
-	void centerString();
+	static bool isLoggedIn();
 
 private:
 

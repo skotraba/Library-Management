@@ -39,4 +39,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Books\Booklist.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Books\Booklistcheckedout.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="Books\Booklistavailable.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
