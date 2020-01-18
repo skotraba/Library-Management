@@ -4,7 +4,6 @@
 //Create Library and book List
 Library::Library(bool run) : isRunning(run)
 {
-	
 }
 
 //librarian Can Add book to library
@@ -25,6 +24,7 @@ void Library::addBook()
 	Book book2(name, type, year);
 	bookList.push_back(book2);
 
+	// adds book to the master booklist file
 	std::ofstream bookFile("Books\\Booklist.txt", std::ios::app);
 	if (bookFile.is_open())
 	{
@@ -37,6 +37,7 @@ void Library::addBook()
 
 	bookFile.close();
 
+	// adds book to the available booklist file
 	std::ofstream bookUpdateFile("Books\\Booklistavailable.txt", std::ios::app);
 	if (bookUpdateFile.is_open())
 	{
@@ -48,8 +49,6 @@ void Library::addBook()
 	}
 
 	bookUpdateFile.close();
-
-
 }
 
 //Student can check out book
@@ -67,7 +66,7 @@ void Library::bookCheckout()
 	Book tempBook = Book(tempTitle, tempType, tempYear);
 
 	std::ifstream bookFile("Books\\Booklistavailable.txt", std::ios::app);
-	
+
 	if (bookFile.is_open())
 	{
 		string title, type;
@@ -75,35 +74,30 @@ void Library::bookCheckout()
 		while (bookFile >> title >> type >> year)
 		{
 			Book book3(title, type, year);
-			bookList.push_back(book3);
 
-			for (unsigned int i = 0; i < bookList.size(); i++)
+			if (book3 == tempBook) 
 			{
-				if (bookList[i] == tempBook)
+				char choice;
+				std::cout << "Would you like to check out " << title << " Y/N ?" << std::endl;
+				std::cin >> choice;
+
+				if (choice == 'y')
 				{
-					char choice;
-					std::cout << "Would you like to check out " << title << " Y/N ?" << std::endl;
-					std::cin >> choice;
-
-					if (choice == 'y')
-					{
-						tempCheckOut.push_back(bookList[i]);
-						
-						bookList.erase(std::remove(bookList.begin(), bookList.end(), bookList[i]), bookList.end());
-					}
-					
+					tempCheckOut.push_back(book3);
 				}
-				
 			}
-			
+			// store all books except for the one we're removing in the booklist
+			else 
+			{
+				bookList.push_back(book3);
+			}
 		}
-
 	}
 	else
 	{
 		std::cout << "File did not open";
 	}
-	
+
 	bookFile.close();
 
 	// Removes the book from the available booklist file
@@ -143,7 +137,7 @@ void Library::bookCheckout()
 //TODO Need to implement to text file
 void Library::bookReturn()
 {
-	
+
 	string tempTitle;
 	std::cout << "Enter Title: " << std::endl; std::cin >> tempTitle;
 
@@ -163,32 +157,27 @@ void Library::bookReturn()
 		int year = 0;
 		while (bookFile >> title >> type >> year)
 		{
-
 			Book book3(title, type, year);
-			bookList.push_back(book3);
 
-			for (unsigned int i = 0; i < bookList.size(); i++)
+			if (book3 == tempBook)
 			{
-				if (bookList[i] == tempBook)
+				char choice;
+				std::cout << "Would you like to return " << title << " Y/N ?" << std::endl;
+				std::cin >> choice;
+
+				if (choice == 'y')
 				{
-					char choice;
-					std::cout << "Would you like to return " << title << " Y/N ?" << std::endl;
-					std::cin >> choice;
-
-					if (choice == 'y')
-					{
-						tempCheckOut.push_back(bookList[i]);
-
-						bookList.erase(std::remove(bookList.begin(), bookList.end(), bookList[i]), bookList.end());
-
-					}
+					tempCheckOut.push_back(bookList[i]);
 
 				}
 
 			}
-
+			// store all books except for the one we're removing in the booklist
+			else
+			{
+				bookList.push_back(book3);
+			}
 		}
-
 	}
 	else
 	{
@@ -224,13 +213,13 @@ void Library::bookReturn()
 	}
 	bookList = {};
 	tempCheckOut = {};
-	
+
 }
 
 //librarian or student can show available books
 void Library::showBookList()
 {
-	
+
 	std::ifstream myReadFile("Books\\Booklistavailable.txt");
 	string title, type;
 	int year;
@@ -241,7 +230,7 @@ void Library::showBookList()
 	}
 
 	myReadFile.close();
-	
+
 }
 
 
