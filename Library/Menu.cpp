@@ -43,6 +43,7 @@ void Menu::showMainMenu()
 		int tempPassword;
 		std::cout << "Enter admin password: " << std::endl;
 		std::cin >> tempPassword;
+		std::cin.ignore();
 
 		if (tempPassword == password)
 		{
@@ -51,12 +52,17 @@ void Menu::showMainMenu()
 				lib.showMenuL();
 			}
 		}
+		else
+		{
+			std::cout << "Wrong password." << std::endl;
+			showMainMenu();
+		}
 	}
 	else if (input == 1)
 	{
 		int choice = 0;
 
-		std::cout << "\n";
+
 		std::cout << "1. Register \n2. Login \n" << std::endl;
 		std::cin >> choice;
 

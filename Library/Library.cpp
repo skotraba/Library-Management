@@ -1,6 +1,9 @@
 #include "Library.h"
 #include "Menu.h"
 
+#include <string>
+#include <sstream>
+
 //Create Library and book List
 Library::Library(bool run) : isRunning(run)
 {
@@ -10,58 +13,43 @@ Library::Library(bool run) : isRunning(run)
 void Library::addBook()
 {
 	string name = "N/a";
-	std::cout << "Type in book name: \n" << std::endl;
-	std::cin >> name;
+	std::cout << "Type in book name: " << std::endl;
+	std::getline(std::cin, name);
 
 	string type = "n/a";
 	std::cout << "Type in book type: \n" << std::endl;
-	std::cin >> type;
+	std::getline(std::cin, type);
 
 	int year = 0;
 	std::cout << "Type in book year: \n" << std::endl;
 	std::cin >> year;
+	std::cin.ignore();
 
+	char c = ',';
 	Book book2(name, type, year);
 	bookList.push_back(book2);
 
 	// adds book to the master booklist file
-	std::ofstream bookFile("Books\\Booklist.txt", std::ios::app);
-	if (bookFile.is_open())
-	{
-		bookFile << std::endl << book2.getTitle() << " " << book2.getType() << " " << book2.getYear();
-	}
-	else
-	{
-		std::cout << "Text file error";
-	}
-
-	bookFile.close();
+	writeBookToFile(book2, "Booklist", true);
 
 	// adds book to the available booklist file
-	std::ofstream bookUpdateFile("Books\\Booklistavailable.txt", std::ios::app);
-	if (bookUpdateFile.is_open())
-	{
-		bookUpdateFile << std::endl << book2.getTitle() << " " << book2.getType() << " " << book2.getYear();
-	}
-	else
-	{
-		std::cout << "Text file error";
-	}
-
-	bookUpdateFile.close();
+	writeBookToFile(book2, "Booklistavailable", true);
 }
 
 //Student can check out book
 void Library::bookCheckout()
 {
 	string tempTitle;
-	std::cout << "Enter Title: " << std::endl; std::cin >> tempTitle;
+	std::cout << "Enter Title: " << std::endl; 
+	std::getline(std::cin, tempTitle);
 
 	string tempType;
-	std::cout << "Enter type: " << std::endl; std::cin >> tempType;
+	std::cout << "Enter type: " << std::endl; 
+	std::getline(std::cin, tempType);
 
 	int tempYear;
-	std::cout << "Enter year: " << std::endl; std::cin >> tempYear;
+	std::cout << "Enter year: " << std::endl; 
+	std::cin >> tempYear;
 
 	Book tempBook = Book(tempTitle, tempType, tempYear);
 
@@ -69,13 +57,23 @@ void Library::bookCheckout()
 
 	if (bookFile.is_open())
 	{
-		string title, type;
+		string title, type, tmpYear;
 		int year = 0;
-		while (bookFile >> title >> type >> year)
-		{
-			Book book3(title, type, year);
 
-			if (book3 == tempBook) 
+		string line;
+
+		// read a line of the file
+		while (getline(bookFile, line)) {
+			std::stringstream ss(line);
+			getline(ss, title, ',');
+			getline(ss, type, ',');
+			getline(ss, tmpYear, ',');
+
+			year = std::stoi(tmpYear);
+
+			Book b = Book(title, type, year);
+
+			if (b == tempBook)
 			{
 				char choice;
 				std::cout << "Would you like to check out " << title << " Y/N ?" << std::endl;
@@ -83,13 +81,14 @@ void Library::bookCheckout()
 
 				if (choice == 'y')
 				{
-					tempCheckOut.push_back(book3);
+					tempCheckOut.push_back(b);
 				}
+
 			}
 			// store all books except for the one we're removing in the booklist
-			else 
+			else
 			{
-				bookList.push_back(book3);
+				bookList.push_back(b);
 			}
 		}
 	}
@@ -102,35 +101,13 @@ void Library::bookCheckout()
 
 	// Removes the book from the available booklist file
 	// rewrites the file with the new available books
-	std::ofstream updateBookFile("Books\\Booklistavailable.txt");
-	if (updateBookFile.is_open())
-	{
-		for (auto i = 0; i < bookList.size(); i++)
-		{
-			updateBookFile << bookList[i].getTitle() << " " << bookList[i].getType() << " " << bookList[i].getYear() << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "Book list available did not open";
-	}
+	writeToFile(false, "Booklistavailable", false);
 
 	// Updates the checked out books file
-	std::ofstream updateCheckedOut("Books\\Booklistcheckedout.txt", std::ios::app);
-	if (updateCheckedOut.is_open())
-	{
-		for (auto i = 0; i < tempCheckOut.size(); i++)
-		{
-			updateCheckedOut << tempCheckOut[i].getTitle() << " " << tempCheckOut[i].getType() << " " << tempCheckOut[i].getYear() << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "Book list available did not open";
-	}
+	writeToFile(true, "Booklistcheckedout", true);
 
-	bookList = {};
-	tempCheckOut = {};
+	bookList.clear();
+	tempCheckOut.clear();
 }
 
 //Student can return book
@@ -139,13 +116,16 @@ void Library::bookReturn()
 {
 
 	string tempTitle;
-	std::cout << "Enter Title: " << std::endl; std::cin >> tempTitle;
+	std::cout << "Enter Title: " << std::endl; 
+	std::getline(std::cin, tempTitle);
 
 	string tempType;
-	std::cout << "Enter type: " << std::endl; std::cin >> tempType;
+	std::cout << "Enter type: " << std::endl; 
+	std::getline(std::cin, tempType);
 
 	int tempYear;
-	std::cout << "Enter year: " << std::endl; std::cin >> tempYear;
+	std::cout << "Enter year: " << std::endl; 
+	std::cin >> tempYear;
 
 	Book tempBook = Book(tempTitle, tempType, tempYear);
 
@@ -153,13 +133,23 @@ void Library::bookReturn()
 
 	if (bookFile.is_open())
 	{
-		string title, type;
+		string title, type, tmpYear;
 		int year = 0;
-		while (bookFile >> title >> type >> year)
-		{
-			Book book3(title, type, year);
 
-			if (book3 == tempBook)
+		string line;
+
+		// read a line of the file
+		while (getline(bookFile, line)) {
+			std::stringstream ss(line);
+			getline(ss, title, ',');
+			getline(ss, type, ',');
+			getline(ss, tmpYear, ',');
+
+			year = std::stoi(tmpYear);
+
+			Book b = Book(title, type, year);
+
+			if (b == tempBook)
 			{
 				char choice;
 				std::cout << "Would you like to return " << title << " Y/N ?" << std::endl;
@@ -167,15 +157,14 @@ void Library::bookReturn()
 
 				if (choice == 'y')
 				{
-					tempCheckOut.push_back(bookList[i]);
-
+					tempCheckOut.push_back(b);
 				}
 
 			}
 			// store all books except for the one we're removing in the booklist
 			else
 			{
-				bookList.push_back(book3);
+				bookList.push_back(b);
 			}
 		}
 	}
@@ -186,51 +175,35 @@ void Library::bookReturn()
 
 	bookFile.close();
 
-	std::ofstream updateBookFile("Books\\Booklistcheckedout.txt");
-	if (updateBookFile.is_open())
-	{
-		for (auto i = 0; i < bookList.size(); i++)
-		{
-			updateBookFile << bookList[i].getTitle() << " " << bookList[i].getType() << " " << bookList[i].getYear() << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "Book list available did not open";
-	}
+	writeToFile(true, "Booklistcheckedout", false);
 
-	std::ofstream updateCheckedOut("Books\\Booklistavailable.txt", std::ios::app);
-	if (updateCheckedOut.is_open())
-	{
-		for (auto i = 0; i < tempCheckOut.size(); i++)
-		{
-			updateCheckedOut << tempCheckOut[i].getTitle() << " " << tempCheckOut[i].getType() << " " << tempCheckOut[i].getYear() << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "Book list available did not open";
-	}
-	bookList = {};
-	tempCheckOut = {};
+	writeToFile(false, "Booklistavailable", true);
 
+	bookList.clear();
+	tempCheckOut.clear();
 }
 
 //librarian or student can show available books
 void Library::showBookList()
 {
-
 	std::ifstream myReadFile("Books\\Booklistavailable.txt");
-	string title, type;
+	string title, type, tmpYear;
 	int year;
-	while (myReadFile >> title >> type >> year)
-	{
-		std::cout << "Title: " << title << std::endl << "Type: " << type << std::endl
-			<< "Year: " << year << "\n" << std::endl;
+	string line;
+
+	// read a line of the file
+	while (getline(myReadFile, line)) {
+		std::stringstream ss(line);
+		getline(ss, title, ',');
+		getline(ss, type, ',');
+		getline(ss, tmpYear, ',');
+
+		year = std::stoi(tmpYear);
+
+		Book b = Book(title, type, year);
+		b.printBook();
 	}
-
 	myReadFile.close();
-
 }
 
 
@@ -239,12 +212,21 @@ void Library::showCheckedOutList()
 {
 
 	std::ifstream myReadFile("Books\\Booklistcheckedout.txt");
-	string title, type;
+	string title, type, tmpYear;
 	int year;
-	while (myReadFile >> title >> type >> year)
+	string line;
+	while (getline(myReadFile, line))
 	{
-		std::cout << "Title: " << title << std::endl << "Type: " << type << std::endl
-			<< "Year: " << year << "\n" << std::endl;
+		std::stringstream ss(line);
+		getline(ss, title, ',');
+		getline(ss, type, ',');
+		getline(ss, tmpYear, ',');
+
+		year = std::stoi(tmpYear);
+
+		Book b = Book(title, type, year);
+		b.printBook();
+
 	}
 
 	myReadFile.close();
@@ -257,36 +239,36 @@ bool Library::showMenuL()
 	std::cout << "\n";
 	std::cout << " \nPlease choose an option" << std::endl;
 	std::cout << "----------------------------------------" << std::endl;
-	std::cout << " 1. Book Checkout \n 2. Book Return \n 3. List available books \n 4. Add Book \n 5. Show Unavailable Books \n 6. Logout \n 7. Quit program" << std::endl;
+	std::cout << " 1. Book Checkout \n 2. Book Return \n 3. List available books \n 4. Add Book \n 5. Show Unavailable Books \n 6. Logout \n 7. Q to Quit program" << std::endl;
 	std::cout << "Enter number or other character to quit: \n " << std::endl;
-	int choice = 0;
-	std::cin >> choice;
+	string choice;
+	std::getline(std::cin, choice);
 
-	if (choice == 1)
+	if (choice == "1")
 	{
 		bookCheckout();
 	}
-	else if (choice == 2)
+	else if (choice == "2")
 	{
 		bookReturn();
 	}
-	else if (choice == 3)
+	else if (choice == "3")
 	{
 		showBookList();
 	}
-	else if (choice == 4)
+	else if (choice == "4")
 	{
 		addBook();
 	}
-	else if (choice == 5)
+	else if (choice == "5")
 	{
 		showCheckedOutList();
 	}
-	else if (choice == 6)
+	else if (choice == "6")
 	{
 		Menu::showMainMenu();
 	}
-	else
+	else if (choice == "7")
 	{
 		return isRunning = false;
 	}
@@ -300,30 +282,26 @@ bool Library::showMenuS()
 	std::cout << "----------------------------------------" << std::endl;
 	std::cout << " 1. Book Checkout \n 2. Book Return \n 3. List available books \n 4. Logout \n 5. Quit Program" << std::endl;
 	std::cout << "Enter number or other character to quit: \n " << std::endl;
-	int choice = 0;
-	std::cin >> choice;
+	string choice;
+	std::getline(std::cin, choice);
 
-	if (choice == 1)
+	if (choice == "1")
 	{
 		bookCheckout();
 	}
-	else if (choice == 2)
+	else if (choice == "2")
 	{
 		bookReturn();
 	}
-	else if (choice == 3)
+	else if (choice == "3")
 	{
 		showBookList();
 	}
-	else if (choice == 4)
+	else if (choice == "4")
 	{
 		Menu::showMainMenu();
 	}
-	else if (choice == 5)
-	{
-		return isRunning = false;
-	}
-	else
+	else if (choice == "5")
 	{
 		return isRunning = false;
 	}
@@ -333,4 +311,47 @@ bool Library::showMenuS()
 bool Library::is_running()
 {
 	return isRunning;
+}
+
+void Library::writeToFile(bool checkOut, string fileName, bool append) 
+{
+	vector<Book> vec;
+	if (checkOut) {
+		vec = tempCheckOut;
+	}
+	else {
+		vec = bookList;
+	}
+
+	for (auto i = 0; i < vec.size(); i++)
+	{
+		if (i > 0) 
+		{
+			append = true;
+		}
+		writeBookToFile(vec[i], fileName, append);
+	}
+}
+
+void Library::writeBookToFile(Book b, string fileName, bool append)
+{
+	string filePath = "Books\\" + fileName + ".txt";
+	std::ofstream file;
+	if (append)
+	{
+		file.open(filePath, std::ios::app);
+	}
+	else
+	{
+		file.open(filePath);
+	}
+	if (file.is_open())
+	{
+		file << b.getTitle() << "," << b.getType() << "," << b.getYear() << std::endl;
+	}
+	else
+	{
+		std::cout << "Book list available did not open";
+	}
+	file.close();
 }

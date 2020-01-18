@@ -25,6 +25,9 @@ private:
 	vector<Book> bookList;
 	bool isRunning = true;
 	
+	void writeToFile(bool checkOut, string fileName, bool append);
+	void writeBookToFile(Book b, string fileName, bool append);
+
 };
 
 #endif //LIBRARY_H

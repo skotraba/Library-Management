@@ -3,6 +3,8 @@
 #define MENU_H
 #include "Library.h"
 #include <fstream>
+#include<limits>
+#include<ios>
 
 class Menu
 {

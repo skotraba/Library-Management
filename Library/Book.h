@@ -22,12 +22,14 @@ public:
 
 	void printBook();
 	bool operator==(Book b2);
-	
 
-private:
 	string m_bookType;
 	string m_bookTitle;
 	int m_year;
+	
+
+private:
+
 
 };
 
