@@ -1,6 +1,5 @@
 #include "Library.h"
 #include "Menu.h"
-
 #include <string>
 #include <sstream>
 
@@ -27,7 +26,6 @@ void Library::addBook()
 
 	char c = ',';
 	Book book2(name, type, year);
-	bookList.push_back(book2);
 
 	// adds book to the master booklist file
 	writeBookToFile(book2, "Booklist", true);
@@ -36,9 +34,12 @@ void Library::addBook()
 	writeBookToFile(book2, "Booklistavailable", true);
 }
 
-//Student can check out book
+//Librarian can check out book
 void Library::bookCheckout()
 {
+	vector<Book> bookList;
+	vector<Book> tempCheckOut;
+
 	string tempTitle;
 	std::cout << "Enter Title: " << std::endl; 
 	std::getline(std::cin, tempTitle);
@@ -75,6 +76,7 @@ void Library::bookCheckout()
 
 			if (b == tempBook)
 			{
+
 				char choice;
 				std::cout << "Would you like to check out " << title << " Y/N ?" << std::endl;
 				std::cin >> choice;
@@ -83,7 +85,6 @@ void Library::bookCheckout()
 				{
 					tempCheckOut.push_back(b);
 				}
-
 			}
 			// store all books except for the one we're removing in the booklist
 			else
@@ -101,19 +102,18 @@ void Library::bookCheckout()
 
 	// Removes the book from the available booklist file
 	// rewrites the file with the new available books
-	writeToFile(false, "Booklistavailable", false);
+	writeToFile(bookList, false, "Booklistavailable", false);
 
 	// Updates the checked out books file
-	writeToFile(true, "Booklistcheckedout", true);
-
-	bookList.clear();
-	tempCheckOut.clear();
+	writeToFile(tempCheckOut, true, "Booklistcheckedout", true);
+	
 }
 
-//Student can return book
-//TODO Need to implement to text file
+//Librarian can return book
 void Library::bookReturn()
 {
+	vector<Book> bookList;
+	vector<Book> tempCheckOut;
 
 	string tempTitle;
 	std::cout << "Enter Title: " << std::endl; 
@@ -159,7 +159,6 @@ void Library::bookReturn()
 				{
 					tempCheckOut.push_back(b);
 				}
-
 			}
 			// store all books except for the one we're removing in the booklist
 			else
@@ -175,12 +174,17 @@ void Library::bookReturn()
 
 	bookFile.close();
 
-	writeToFile(true, "Booklistcheckedout", false);
+	if (bookList.empty())
+	{
+		std::ofstream bookFile("Books\\Booklistcheckedout.txt");
+	}
+	else
+	{
+		writeToFile(bookList, false, "Booklistcheckedout", false);
+	}
 
-	writeToFile(false, "Booklistavailable", true);
+	writeToFile(tempCheckOut, true, "Booklistavailable", true);
 
-	bookList.clear();
-	tempCheckOut.clear();
 }
 
 //librarian or student can show available books
@@ -313,16 +317,9 @@ bool Library::is_running()
 	return isRunning;
 }
 
-void Library::writeToFile(bool checkOut, string fileName, bool append) 
+void Library::writeToFile(vector<Book> vec, bool checkOut, string fileName, bool append) 
 {
-	vector<Book> vec;
-	if (checkOut) {
-		vec = tempCheckOut;
-	}
-	else {
-		vec = bookList;
-	}
-
+	
 	for (auto i = 0; i < vec.size(); i++)
 	{
 		if (i > 0) 

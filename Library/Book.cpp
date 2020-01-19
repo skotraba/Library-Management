@@ -44,6 +44,7 @@ void Book::printBook()
 		"\n" << "Year: " << m_year << "\n";
 }
 
+//Overrides '==' operator to compare two books
 bool Book::operator==(Book b2)
 {
 	return (this->m_bookTitle.compare(b2.m_bookTitle) == 0 && this->m_bookType.compare(b2.m_bookType) == 0

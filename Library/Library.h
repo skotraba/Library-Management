@@ -8,7 +8,10 @@
 class Library
 {
 public:
+	//Constructor
 	Library(bool run);
+
+	//Methods
 	void addBook();
 	void bookCheckout();
 	void bookReturn();
@@ -16,16 +19,14 @@ public:
 	bool showMenuL();
 	bool showMenuS();
 	void showCheckedOutList();
-	
-
 	bool is_running();
-private:
 
-	vector<Book> tempCheckOut;
-	vector<Book> bookList;
+private:
+	//Variables
 	bool isRunning = true;
 	
-	void writeToFile(bool checkOut, string fileName, bool append);
+	//Methods
+	void writeToFile(vector<Book> vec, bool checkOut, string fileName, bool append);
 	void writeBookToFile(Book b, string fileName, bool append);
 
 };

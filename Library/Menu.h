@@ -18,7 +18,6 @@ public:
 
 private:
 
-
 };
 
 #endif MENU_H
